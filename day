@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纪念日天数记录</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.8rem;
+            background: linear-gradient(90deg, #d35400, #e67e22);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .decoration {
+            position: absolute;
+            font-size: 8rem;
+            opacity: 0.05;
+            color: #d35400;
+            z-index: 1;
+        }
+        
+        .decoration.left {
+            left: 20px;
+            top: 20px;
+        }
+        
+        .decoration.right {
+            right: 20px;
+            bottom: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .right-panel {
+            flex: 2;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-title i {
+            margin-right: 10px;
+            color: #e67e22;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            border-color: #e67e22;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #d35400, #e67e22);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .milestone-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .milestone-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid #e67e22;
+        }
+        
+        .milestone-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .milestone-card.important {
+            border-left-color: #c0392b;
+        }
+        
+        .milestone-card .days {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #d35400;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .milestone-card .days-label {
+            font-size: 1rem;
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .milestone-card .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .milestone-card .title i {
+            margin-right: 8px;
+            color: #e67e22;
+        }
+        
+        .milestone-card .date {
+            color: #7f8c8d;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .milestone-card .date i {
+            margin-right: 8px;
+            color: #95a5a6;
+        }
+        
+        .milestone-card .description {
+            color: #555;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #e74c3c;
+            font-size: 18px;
+            transition: all 0.3s;
+            opacity: 0.7;
+        }
+        
+        .delete-btn:hover {
+            opacity: 1;
+            background: #f1f2f6;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #95a5a6;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #ecf0f1;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #7f8c8d;
+        }
+        
+        .current-date {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            color: #555;
+            font-size: 1rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .milestone-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .milestone-card .days-container {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #fff8f1 0%, #ffe8d6 100%);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="decoration left"><i class="fas fa-heart"></i></div>
+            <h1>纪念日天数记录</h1>
+            <p class="subtitle">记录从特殊日子开始已经走过的每一天，珍藏每一份回忆</p>
+            <div class="decoration right"><i class="fas fa-calendar-alt"></i></div>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <h2 class="form-title"><i class="fas fa-plus-circle"></i> 添加新的纪念日</h2>
+                <form id="milestoneForm">
+                    <div class="form-group">
+                        <label for="title"><i class="fas fa-heading"></i> 纪念日名称</label>
+                        <input type="text" id="title" placeholder="例如：我们在一起的日子" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date"><i class="fas fa-calendar-day"></i> 开始日期</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description"><i class="fas fa-sticky-note"></i> 描述（可选）</label>
+                        <textarea id="description" rows="3" placeholder="关于这个纪念日的描述..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="color">
+                            <i class="fas fa-palette"></i> 卡片颜色
+                            <select id="color">
+                                <option value="#e67e22">橙色（默认）</option>
+                                <option value="#3498db">蓝色</option>
+                                <option value="#2ecc71">绿色</option>
+                                <option value="#9b59b6">紫色</option>
+                                <option value="#e74c3c">红色</option>
+                            </select>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn"><i class="fas fa-save"></i> 添加纪念日</button>
+                </form>
+                
+                <div class="current-date">
+                    <i class="fas fa-clock"></i> 当前日期：<span id="currentDate"></span>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <h2 class="form-title"><i class="fas fa-history"></i> 我的纪念日</h2>
+                
+                <div id="milestoneList">
+                    <!-- 这里会动态添加纪念日卡片 -->
+                    <div class="empty-state" id="emptyState">
+                        <i class="fas fa-heart"></i>
+                        <h3>还没有添加纪念日</h3>
+                        <p>添加第一个纪念日，开始记录美好时光</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 纪念日天数记录器 | 记录每一个重要的日子</p>
+            <p>所有纪念日数据保存在本地浏览器中</p>
+        </footer>
+    </div>
+
+    <script>
+        // 初始化 - 设置默认日期为2022-12-08
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置当前日期显示
+            const now = new Date();
+            const currentDateElement = document.getElementById('currentDate');
+            currentDateElement.textContent = now.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+            
+            // 设置默认日期为2022年12月8日
+            document.getElementById('date').value = '2022-12-08';
+            
+            // 从本地存储加载纪念日
+            loadMilestones();
+            
+            // 添加表单提交事件
+            document.getElementById('milestoneForm').addEventListener('submit', addMilestone);
+        });
+        
+        // 计算已过去的天数
+        function calculateDays(startDate) {
+            const start = new Date(startDate);
+            const now = new Date();
+            
+            // 重置时间为午夜，确保只计算完整的天数
+            start.setHours(0, 0, 0, 0);
+            now.setHours(0, 0, 0, 0);
+            
+            // 计算天数差
+            const timeDiff = now.getTime() - start.getTime();
+            const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+            
+            return daysDiff;
+        }
+        
+        // 添加纪念日
+        function addMilestone(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+            const color = document.getElementById('color').value;
+            
+            // 计算已过去的天数
+            const daysPassed = calculateDays(date);
+            
+            // 创建纪念日对象
+            const milestone = {
+                id: Date.now(),
+                title: title,
+                date: date,
+                description: description,
+                color: color,
+                daysPassed: daysPassed,
+                createdAt: new Date().toISOString()
+            };
+            
+            // 保存到本地存储
+            saveMilestone(milestone);
+            
+            // 添加到页面
+            addMilestoneToPage(milestone);
+            
+            // 重置表单
+            document.getElementById('milestoneForm').reset();
+            // 重置默认日期
+            document.getElementById('date').value = '2022-12-08';
+            
+            // 隐藏空状态提示
+            document.getElementById('emptyState').style.display = 'none';
+        }
+        
+        // 保存纪念日到本地存储
+        function saveMilestone(milestone) {
+            let milestones = JSON.parse(localStorage.getItem('milestones')) || [];
+            milestones.push(milestone);
+            localStorage.setItem('milestones', JSON.stringify(milestones));
+        }
+        
+        // 从本地存储加载纪念日
+        function loadMilestones() {
+            const milestones = JSON.parse(localStorage.getItem('milestones')) || [];
+            
+            if (milestones.length === 0) {
+                // 如果没有纪念日，显示空状态
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+            
+            // 隐藏空状态提示
+            document.getElementById('emptyState').style.display = 'none';
+            
+            // 按创建日期排序（最新的在前）
+            milestones.sort((a, b) => b.id - a.id);
+            
+            // 添加到页面
+            milestones.forEach(milestone => {
+                // 更新天数（因为距离上次打开可能已经过去了更多天数）
+                milestone.daysPassed = calculateDays(milestone.date);
+                addMilestoneToPage(milestone);
+            });
+        }
+        
+        // 将纪念日添加到页面
+        function addMilestoneToPage(milestone) {
+            const milestoneList = document.getElementById('milestoneList');
+            
+            // 创建纪念日卡片
+            const card = document.createElement('div');
+            card.className = 'milestone-card';
+            card.dataset.id = milestone.id;
+            card.style.borderLeftColor = milestone.color;
+            
+            // 格式化日期
+            const dateObj = new Date(milestone.date);
+            const formattedDate = dateObj.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // 根据天数选择不同的图标
+            let icon = 'fas fa-heart';
+            if (milestone.daysPassed > 365) {
+                icon = 'fas fa-gem'; // 一年以上
+            } else if (milestone.daysPassed > 100) {
+                icon = 'fas fa-star'; // 100天以上
+            }
+            
+            card.innerHTML = `
+                <button class="delete-btn" onclick="deleteMilestone(${milestone.id})">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="days-container">
+                    <div class="days">${milestone.daysPassed}</div>
+                    <div class="days-label">已经过去的天数</div>
+                </div>
+                <h3 class="title"><i class="${icon}"></i> ${milestone.title}</h3>
+                <p class="date"><i class="fas fa-calendar"></i> 开始于：${formattedDate}</p>
+                ${milestone.description ? `<p class="description">${milestone.description}</p>` : ''}
+            `;
+            
+            // 将新卡片插入到空状态提示之前
+            const emptyState = document.getElementById('emptyState');
+            if (emptyState.style.display !== 'none') {
+                milestoneList.insertBefore(card, emptyState);
+            } else {
+                milestoneList.insertBefore(card, milestoneList.firstChild);
+            }
+        }
+        
+        // 删除纪念日
+        function deleteMilestone(id) {
+            if (!confirm('确定要删除这个纪念日吗？')) {
+                return;
+            }
+            
+            // 从本地存储中删除
+            let milestones = JSON.parse(localStorage.getItem('milestones')) || [];
+            milestones = milestones.filter(milestone => milestone.id !== id);
+            localStorage.setItem('milestones', JSON.stringify(milestones));
+            
+            // 从页面中删除
+            const card = document.querySelector(`.milestone-card[data-id="${id}"]`);
+            if (card) {
+                card.remove();
+            }
+            
+            // 如果没有纪念日了，显示空状态
+            milestones = JSON.parse(localStorage.getItem('milestones')) || [];
+            if (milestones.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+            }
+        }
+        
+        // 每秒更新当前日期显示
+        setInterval(() => {
+            const now = new Date();
+            const currentDateElement = document.getElementById('currentDate');
+            currentDateElement.textContent = now.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            }) + ' ' + now.toLocaleTimeString('zh-CN');
+            
+            // 每10分钟更新一次纪念日天数（避免频繁更新）
+            const minutes = now.getMinutes();
+            if (minutes % 10 === 0 && now.getSeconds() === 0) {
+                updateAllMilestonesDays();
+            }
+        }, 1000);
+        
+        // 更新所有纪念日的天数
+        function updateAllMilestonesDays() {
+            const milestones = JSON.parse(localStorage.getItem('milestones')) || [];
+            
+            milestones.forEach(milestone => {
+                // 更新天数
+                milestone.daysPassed = calculateDays(milestone.date);
+                
+                // 更新页面显示
+                const card = document.querySelector(`.milestone-card[data-id="${milestone.id}"]`);
+                if (card) {
+                    const daysElement = card.querySelector('.days');
+                    if (daysElement) {
+                        daysElement.textContent = milestone.daysPassed;
+                    }
+                }
+            });
+            
+            // 保存更新后的数据
+            localStorage.setItem('milestones', JSON.stringify(milestones));
+        }
+    </script>
+</body>
+</html>
